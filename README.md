@@ -1,2 +1,2 @@
 # Resume_FIltering
-FInal Year Project
+Final Year Project
