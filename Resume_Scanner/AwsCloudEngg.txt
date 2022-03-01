@@ -1,0 +1,6 @@
+Experience with the core AWS services  (e.g. EC2, RDS, ELB, EBD, S3, VPC, Glacier, IAM) to develop and maintain an Amazon AWS based cloud solution.
+Experience with Docker and Kubernetes.
+Strong concepts of security best practices (e.g. using IAM Roles, etc.).
+Ability to troubleshoot distributed systems.
+Knowledge of writing infrastructure as code (IaC) using Cloud Formation.
+Past experience with the server less approaches using AWS Lambda .
