@@ -1,0 +1,25 @@
+ Work with the Data Analytics lead and other stakeholders to establish project objectives
+ Define detailed requirements including business rules and data acquisition needs
+ Analyze large, complex data sets to identify trends, patterns and produce compelling insights
+ Collaborate with stakeholders to develop user-friendly dashboards and visualizations
+ Develop processes and scripts to Extract, Transform and Load (ETL) data
+ Perform ongoing dashboard maintenance, including conducting data quality reviews
+ Maintain strong client focus by building strong relationships with Firm-wide stakeholders and identify opportunities to utilize data analytics solutions and tools in Internal Audit
+Qualifications Minimum Qualifications
+ Bachelor's in Information Technology, Computing, Mathematics, Statistics, or related fields
+ Experience in a professional services or banking and capital markets firm
+ Certifications like Tableau CISA, CISSP, Python etc. would be an advantage
+ Meaningful work experience.
+ Excellent analytical and reasoning skills that result in clear, robust, flexible architectures
+ Experience in data analytics, reporting and data maintenance
+ Outstanding interpersonal skills with both technical and non-technical partners
+Preferred qualifications
+ Experience using SQL, Python etc. to create complex queries for extracting and analyzing data
+ Technical knowledge of data models and database design
+ Experience in Internal Audit banking and capital markets would be an advantage Ability to translate complex technical data concepts and language into business context
+ Working understanding of data protection and data sensitivity rules and best practices
+ Experience working with global teams preferred
+ Excellent communication skills, both written and oral
+ Knowledge of SQL and other database technologies, PowerBI and Microsoft Azure a plus
+ Experience on any ETL tool, SSIS is a plus
+ Experience in one of the cloud services like AWS, Azure, GCP (preferred Azure) several of the following
