@@ -16,13 +16,37 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from Resume_Filtering import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index,name="home"),
     path('contact/',views.contact,name="contact"),
     path('login/',views.login,name="login"),
-    path('recruiter/',views.recruiterlogin,name="recruiter"),
-    
-    
+    path('resumes/',views.resumeupload,name="resumeupload"),
+    path('recruiter/',views.recruitersignup,name="recruiter"),
+    path('recruiter/reclogin',views.recruiterlogin,name='reclogin'),
+
+    path('logincheck/',views.logincheck,name='logincheck'),
+    path('logincheck/logout/', views.logout_view, name='logout'),
+    path('logincheck/wipjobs/',views.wipjobs,name = 'wipjobs'),
+    path('logincheck/waljobs',views.waljobs,name = 'waljobs'),
+    path('logincheck/seijobs',views.seijobs,name = 'seijobs'),
+    path('logincheck/ltijobs',views.ltijobs,name = 'ltijobs'),
+    path('recaccount',views.recaccount,name = 'recaccount'),
+    path('recsignup/',views.recsignup, name= 'recsignup'),
+    path('addfiles/',views.addfiles, name= 'addfiles'),
+    path('resumes/',views.resumes,name = 'resumes'),
+    path('dummy/',views.dummy,name = 'dummy'),
+
+   
+
 ]
+    
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+
+    

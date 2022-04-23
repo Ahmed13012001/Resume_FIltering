@@ -12,6 +12,19 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from django.contrib.messages import constants as messages
+
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
+
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Resume_Filtering'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -75,9 +90,17 @@ WSGI_APPLICATION = 'Resume_Filtering.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'resScan',
+        'USER' : 'root',
+        'PASSWORD' : '',
+        'HOST' : 'localhost',
+        'PORT' : '3325',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
+
+}
 }
 
 
@@ -121,5 +144,9 @@ STATIC_URL = '/static/'
 
 
 STATICFILES_DIRS = [
+
     BASE_DIR,"static"
 ]
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
+
