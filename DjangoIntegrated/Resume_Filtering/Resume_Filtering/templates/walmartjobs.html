@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .topnav {
+  
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: right;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 20px 30px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: #3a4450;
+}
+
+td a:hover{
+    color: green;
+}
+td a{
+    color: violet;
+}
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color:#e6e1e6;
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+
+
+#tbc
+{
+    width: auto;
+    height: 1100px;
+    transform: rotate(90deg);
+    transform-origin: 50% 50%;
+    margin-left: 10px;
+    margin-top: -80px;
+    font-family: Roboto, Consolas, Arial;
+}
+
+#tb
+{
+    border-collapse: collapse;
+    width: 100%;
+    column-width: 200px;
+    height: 100%;
+    margin: 0;
+  
+    padding-top: 300px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+}
+
+
+#tb td p
+{
+    transform: rotate(-90deg);
+	transform-origin: 50% 50%;
+    margin-top: -48px;
+    padding: 14px;
+    text-align: center;
+}
+h1{
+  color: white;
+    letter-spacing: inherit;
+    padding: 30px;
+}
+td{
+  color: white;
+}
+#tbc{
+    padding-top: 350px;
+    padding-left: 180px;
+}
+</style>
+<h1>FLY HIGH
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="topnav" id="myTopnav">
+  <a href="wipjobs">Wipro</a>
+  <a href="seijobs">Seimens </a>
+  <a href="ltijobs">LTI</a>
+  <a href="waljobs" class="active">Walmart</a>
+  <a href="http://127.0.0.1:8000/">Logout</a>
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+</h1>
+</head>
+
+<body bgcolor="#404b58">
+    <div style="text-align: center;">Jobs that matches your Resume</div>
+  <div id = "tbc">
+    <table id = "tb">
+      
+      <tr>
+      
+        {% for i in waltitle %}
+          <td><p>{{i}}</p></td>
+          {% endfor %}
+      </tr>
+      <tr>
+      
+        {% for j in walloc %}
+          <td><p>{{j}}</p></td>
+          {% endfor %}
+      </tr>
+      <tr>
+       
+        {% for k in wallink %}
+          <td><a href={{k}}><p>{{k}}</p></a></td>
+          {% endfor %}
+      </tr>
+        
+    </table>
+
+
+</body></html>
