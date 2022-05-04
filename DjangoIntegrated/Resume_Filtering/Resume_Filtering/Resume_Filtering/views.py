@@ -6,14 +6,20 @@ from django.contrib import auth
 from django.db import connection
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
-from .models import signupuser
+from .models import Signupuser
 from pdfminer.high_level import extract_text
 from pyresparser import ResumeParser
 from sklearn.feature_extraction.text import CountVectorizer
 import re
 from sklearn.metrics.pairwise import cosine_similarity
 import tempfile
-from .models import FileUpload
+import io
+import PyPDF2
+
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 # from RESUME_FILTERIING.pythonmodules.jobs import walmartJb
 # from RESUME_FILTERIING.pythonmodules.jobs import skillExtract
 # from .forms import signupuserForm
@@ -145,6 +151,7 @@ def wipjobs(request):
         cursor.execute(query,[mail])
         filepath = cursor.fetchall()
     print(type(filepath))
+    print(filepath)
     print(filepath[0])
     fp = str(filepath[0])
     fp = fp.replace('(','')
@@ -365,6 +372,9 @@ def recaccount(request):
                     return render(request,'HRlogin.html')
 from django.utils.datastructures import MultiValueDictKeyError
 
+def uploadresume(request):
+    return render(request,'upload.html')
+
 def matching(request):
     name = request.session['username']
     email = request.session['email']
@@ -385,58 +395,173 @@ def matching(request):
         
         print(jobpost)
         return render(request,'upload.html')
-
+import sys
 
 cv = CountVectorizer()
 def addfiles(request):
-    def extract_text_from_pdf(pdf_path):
-        return extract_text(pdf_path)
+    name = request.session['username']
+    email = request.session['email']
+    with connection.cursor() as cursor:
+        query = "SELECT `recid` FROM `recaccount` WHERE name = %s and email = %s"
+        cursor.execute(query,[name,email])
+        recid = cursor.fetchone()
     def sort_dict_by_value(d, reverse = False):
         return dict(sorted(d.items(), key = lambda x: x[1], reverse = reverse))
 
     if request.method == 'POST':
-        jobpost = request.FILES.get('document')
+        jobname = request.FILES['document']
+        jobpost = request.FILES['document'].read()
+        with connection.cursor() as cursor:
+            query = "INSERT INTO `jobposts`(`jp_detail`, `jpname`) VALUES (%s,%s)"
+            cursor.execute(query,[jobpost,jobname])
+
         resume = request.FILES.getlist('resumes')
-        print(resume[0])
-        print(resume[-1])
-        last = resume.index(resume[-1])
-        print(last)
-        filename = []
-        for i in range(last+1):
-            filename.append(resume[i])
-        print(filename)
-        post = " "
-        for x in jobpost:
-            post += str(x)
-            #print(x)
-        post = post.replace("\r"," ")
-        post = post.replace('\n'," ")
-        post = post.replace("b'"," ")
-        # print(post)
+        #jobpost contain the entire string that is fetched from the jobpost document uploaded by user
         
-        # matched = {}
+        matched ={}
+        pdf_data = []
+        resumesname=["Resume Names"]
+        mpercent = ["Percentage "]
+        for filename in resume:
+            print(filename)
+            resumesname.append(filename)
+            print('Resumes are !!!!!')
+            pdfread = extract_text(filename)
+                #print(pdfread)
+            with connection.cursor() as cursor:    
+                jpquery = "SELECT `jpid` FROM `jobposts` WHERE jp_detail = %s"
+                cursor.execute(jpquery,[jobpost])
+                jpid = cursor.fetchone()
+                
+                query1 = "INSERT INTO `rcrtresentry`(`recrid`, `jpid`, `resumesdata`, `resname`) VALUES (%s,%s,%s,%s)"
+                cursor.execute(query1,[recid,jpid,pdfread,filename])
+                
+                resquey = "SELECT `resuid` FROM `rcrtresentry` WHERE resname = %s"
+                cursor.execute(resquey,[filename])
+                resuid = cursor.fetchone()
+            text = [pdfread,jobpost]
+            count_matrix = cv.fit_transform(text)
+            matchPercentage = cosine_similarity(count_matrix)[0][1] * 100
+            matchPercentage = round(matchPercentage, 2) 
+            with connection.cursor() as cursor:
+                matchquery = "INSERT INTO `mtchdprcnt`( `resid`, `jpid`, `mtchprcnt`) VALUES (%s,%s,%s)"
+                cursor.execute(matchquery,[resuid,jpid,matchPercentage])
+                query2 = "INSERT INTO `resmatched`(`resname`, `jpname`, `mtchprcnt`) VALUES (%s,%s,%s)"
+                cursor.execute(query2,[filename,jobname,matchPercentage])
+            mpercent.append(matchPercentage)
+            # print(jobname)
+            matched[filename] = matchPercentage
+            # with connection.cursor() as cursor:
+            #     query2 = "INSERT INTO `resmatched`(`resname`, `jpname`, `mtchprcnt`) VALUES (%s,%s,%s)"
+            #     cursor.execute(query2,[filename,jobname,matchPercentage])
+            print(sort_dict_by_value(matched, True))
+
+        # table =[]
+
+        with connection.cursor() as cursor:
+            query = "Select * from resmatched where jpname = %s order by mtchprcnt desc"
+            cursor.execute(query,[jobname]) 
+            data = cursor.fetchall()
+            print(len(data))
+            # print(data)
+            # print(type(data))
+            # context ={          
+            #     'resname':resumesname,
+            #     'percent':mpercent,
+            #     'jobname':jobname
+            # }
+    
+            context={
+                'data':data
                
-        # for x in resume:
-        #     for i in x:
-        #         #print(i)
-        #         i = i.decode('UTF-8')  
-        #         print(i)
-        #     print("-------")         
-        #     filename = f
-        #     text = [f,post]
-        #     count_matrix = cv.fit_transform(text)
-          
-        #     matchPercentage = cosine_similarity(count_matrix)[0][1] * 100
-        #     matchPercentage = round(matchPercentage, 2) 
-           
-        #     matched[filename] = matchPercentage
+            }
+            #print(context[data])
 
-        #     print(sort_dict_by_value(matched, True))
+        return render(request,'resmatching.html',context)
 
-        return redirect('dummy')
-
-  
     return render(request, 'upload.html')
 
-def dummy(request):
-    return render(request,'index.html')
+def mtchd(request):
+    return render(request,'resmatching.html')
+from textwrap import wrap
+import unicodedata
+# from reportlab.pdfbase import pdfmetrics
+# from reportlab.pdfbase.ttfonts import TTFont
+# pdfmetrics.registerFont(TTFont('DejaVuSans','DejaVuSans.ttf'))
+
+# pdfmetrics.registerFont(TTFont('Vera','Vera.ttf'))
+# pdfmetrics.registerFont(TTFont('VeraBd','VeraBd.ttf'))
+# pdfmetrics.registerFont(TTFont('VeraIt','VeraIt.ttf'))
+# pdfmetrics.registerFont(TTFont('VeraBI','VeraBI.ttf'))
+def downloadresume(request,name):
+    resname = name
+    print(resname)
+    with connection.cursor() as cur:
+        que = "SELECT resumesdata FROM `rcrtresentry` WHERE`resname`= %s"
+        cur.execute(que,[resname])
+        data = cur.fetchone()
+    print(data)
+    data2 = data[0].strip()
+    print(data2)
+
+    # data2 = str(data)
+
+    # data = data.replace(u'\xa0', u' ')
+    # for i in data2:
+    #     if i == '"' or i=="'":
+    #         data2.remove(i)
+
+    # data2=unicodedata.normalize("NFKD",data)
+    # data2=str(data).replace(u'\n','<br />')
+    print("data is!!!!!")
+    print(type(data2))
+    print(data2)
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf,pagesize=letter,bottomup=0)
+    textob = c.beginText()
+    textob.setTextOrigin(inch,inch)
+    textob.setFont("Helvetica", 12)
+
+    # wraped_text = "\n".join(wrap(data, 80)) # 80 is line width
+    textob.textLines(data2)
+    lines =[""]
+    print("lInes!!!!!!!!")
+    lines[0] = data
+    print(lines)
+    # for line in lines:
+    #     textob.textLine(line)
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+    return FileResponse(buf,as_attachment=True,filename = resname)
+
+def history(request):
+    name = request.session['username']
+    email = request.session['email']
+    # print(name)
+    with connection.cursor() as cur:
+        que = 'SELECT `recid` FROM `recaccount` WHERE `name`= %s and `email` = %s'
+        cur.execute(que,[name,email])
+        rec = cur.fetchone()
+        rid = int(rec[0])
+        print(rid)
+        que2 = "SELECT t3.jp_detail, t3.jpname, t1.resname, t1.resumesdata FROM `rcrtresentry` as t1 INNER JOIN jobposts as t3 ON ( t1.jpid=t3.jpid ) where t1.recrid = %s"
+        cur.execute(que2,[rid])
+        data = cur.fetchall()
+        context = {
+            'data':data
+        }
+        return render(request,'viewhistory.html',context)
+
+def resumes(request,jpname):
+    jpost = jpname
+    print(jpost)
+    with connection.cursor() as cur:
+        query = "Select * from resmatched where jpname = %s order by mtchprcnt desc"
+        cur.execute(query,[jpost]) 
+        data = cur.fetchall()
+    context = {
+        'data':data
+    }
+    return render(request,'resmatching.html',context)
