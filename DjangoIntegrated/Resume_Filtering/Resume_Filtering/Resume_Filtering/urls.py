@@ -38,7 +38,12 @@ urlpatterns = [
     path('recsignup/',views.recsignup, name= 'recsignup'),
     path('addfiles/',views.addfiles, name= 'addfiles'),
     path('resumes/',views.resumes,name = 'resumes'),
-    path('dummy/',views.dummy,name = 'dummy'),
+    path('mtchd/',views.mtchd,name = 'mtchd'),
+    path('history/',views.history,name = 'history'),
+    path('downloadresume/<str:name>/',views.downloadresume,name = 'downloadresume'),
+    path('resumes/<str:jpname>/',views.resumes,name = 'resumes'),
+    path('uploadresume/',views.uploadresume,name='uploadresume'),
+
 
    
 
