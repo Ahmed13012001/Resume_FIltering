@@ -134,7 +134,7 @@ def logincheck(request):
                     request.session['name'] = uname
                     request.session['password'] = pwd
                     messages.info(request, 'Registration done successfully!')
-                    return render(request,'jobsShow.html',{'filepath':filepath})
+                    return render(request,'login.html',{'filepath':filepath})
 
 from .jobs import skillExtract
 
@@ -183,8 +183,8 @@ def waljobs(request):
         query="Select filepath from signupuser where umail = %s"
         cursor.execute(query,[mail])
         filepath = cursor.fetchall()
-    # print(type(filepath))
-    # print(filepath[0])
+    print(type(filepath))
+    print(filepath[0])
     fp = str(filepath[0])
     fp = fp.replace('(','')
     
@@ -193,9 +193,11 @@ def waljobs(request):
     fp = fp.replace(')','')
     # print(fp)
     domain = skillExtract(fp)
-    waldom = domain[-1]
+    print(domain)
+    
     capedom = domain[0]
     wipdom = domain[1]
+    waldom = domain[2]
     ltidom = capedom
     seimendom = wipdom
     waltitle , walloc , wallink = walmartJb(waldom)
@@ -252,8 +254,8 @@ def ltijobs(request):
         query="Select filepath from signupuser where umail = %s"
         cursor.execute(query,[mail])
         filepath = cursor.fetchall()
-    # print(type(filepath))
-    # print(filepath[0])
+    print(type(filepath))
+    print(filepath[0])
     fp = str(filepath[0])
     fp = fp.replace('(','')
     
@@ -546,7 +548,7 @@ def history(request):
         rec = cur.fetchone()
         rid = int(rec[0])
         print(rid)
-        que2 = "SELECT t3.jp_detail, t3.jpname, t1.resname, t1.resumesdata FROM `rcrtresentry` as t1 INNER JOIN jobposts as t3 ON ( t1.jpid=t3.jpid ) where t1.recrid = %s"
+        que2 = "SELECT DISTINCT t3.jpname FROM `rcrtresentry` as t1 INNER JOIN jobposts as t3 ON ( t1.jpid=t3.jpid ) where t1.recrid = %s"
         cur.execute(que2,[rid])
         data = cur.fetchall()
         context = {
